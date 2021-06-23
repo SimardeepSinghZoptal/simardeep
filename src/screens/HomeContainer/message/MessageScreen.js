@@ -26,6 +26,9 @@ import {fontScale} from '../../../constants/FontSize'
 import {StackActions, useIsFocused} from '@react-navigation/native'
 
 import {Colors} from '../../../constants'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {StorageKey} from '../../../constants/AsyncStorageService'
+import {RouteKeys} from '../../../routes/RouteKeys'
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -50,6 +53,20 @@ const MessageScreen = props => {
   const [noOfPost, setNoOfPost] = useState('30')
   const [exitApp, setExitApp] = useState(0)
 
+  const LogOut = async () => {
+    try {
+      await AsyncStorage.removeItem(StorageKey.ACCESS_TOKEN)
+      const accessToken = await AsyncStorage.getItem(StorageKey.ACCESS_TOKEN)
+      if (accessToken === null) {
+        props.navigation.dispatch(StackActions.replace(RouteKeys.LOGIN))
+      }
+    } catch (e) {
+      // remove error
+    }
+
+    //console.log('Done.')
+  }
+
   return (
     <>
       <SafeAreaView
@@ -59,13 +76,15 @@ const MessageScreen = props => {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 16,
-          }}>
-          Message Screen
-        </Text>
+        <TouchableOpacity onPress={() => LogOut()}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 16,
+            }}>
+            Log out
+          </Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </>
   )

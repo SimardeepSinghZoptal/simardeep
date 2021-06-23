@@ -7,7 +7,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  homeAction: () => dispatch(homeAction()),
+  homeAction: (outletId, accessToken) =>
+    dispatch(homeAction(outletId, accessToken)),
   homeResetState: () => dispatch(homeResetState()),
 })
 

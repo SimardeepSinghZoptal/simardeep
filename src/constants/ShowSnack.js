@@ -6,7 +6,7 @@ export default function ShowSnack (text) {
     Snackbar.show({
       text: text,
       duration: Snackbar.LENGTH_SHORT,
-      backgroundColor: Colors.RED,
+      backgroundColor: Colors.TRANSPARENT_BLACK,
     })
   }, 200)
 }

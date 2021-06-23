@@ -21,29 +21,26 @@ import axios from 'axios'
 import {FlatGrid} from 'react-native-super-grid'
 import CommonLoader from '../../../common/widgets/CommonLoader'
 import {FlatListSlider} from 'react-native-flatlist-slider'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {StorageKey} from '../../../constants/AsyncStorageService'
+import Urls from '../../../constants/Urls'
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const HomeScreen = props => {
-  const [darkAppearance, setDarkAppearance] = useState('')
-  const [showLogoutView, setShowLogoutView] = useState(false)
-  const [title, setTitle] = useState('')
-  const [subtitle, setSubtitle] = useState('')
-  const [subtitle1, setSubtitle1] = useState('')
-  const [isPaid, setIsPaid] = useState('')
-  const [isOffline, setOfflineStatus] = useState(false)
-  const [showDrawerModal, setShowDrawerModal] = useState(false)
   const isFocused = useIsFocused()
   const [loading, setLoading] = useState(false)
-  const [bannerImages, setBannerImages] = useState([])
-  const [gridImages, setGridImages] = useState([])
+  const [shopArray, setShopArray] = useState([])
 
   useEffect(() => {
     if (isFocused) {
-      setLoading(true)
-      props.homeAction()
+      callHomeApi()
     }
-  }, [props.homeAction, isFocused, bannerImages.length])
-
+  }, [props.homeAction, isFocused])
+  const callHomeApi = async () => {
+    var token = await AsyncStorage.getItem(StorageKey.ACCESS_TOKEN)
+    setLoading(true)
+    props.homeAction('86', token)
+  }
   useEffect(() => {
     let responseData = getHomeResponse()
     if (responseData != null) {
@@ -52,40 +49,11 @@ const HomeScreen = props => {
   }, [props.homeReducer.response])
   const getHomeResponse = async () => {
     if (props.homeReducer.loading == false) {
-      console.log('-=-=-=-1-=-=-=-=-=-=-')
       if (props.homeReducer.response != null) {
-        console.log('-=-=-=-2-=-=-=-=-=-=-', props.homeReducer.response)
-        let data = props.homeReducer.response
-        // setBannerImages(data)
-        var temp = []
-        data.forEach((e, i) => {
-          if (i < 5) {
-            temp.push({banner: e})
-            // temp.push(e)
-            console.log('-=-=-=temp-==-=-=-=-', temp)
-          }
-        })
-        if (temp) {
-          setBannerImages(temp)
-        }
-
-        var temp2 = []
-        data.forEach((e, i) => {
-          if (i < 40) {
-            temp2.push(e)
-            console.log('-=-=-=temp2-==-=-=-=-', temp2)
-          }
-        })
-
-        if (temp2) {
-          setGridImages(temp2)
-        }
+        setShopArray(props.homeReducer.response.data.data.containerDetail)
         setLoading(false)
-        console.log('-=-=-=-3-=-=-=-=-=-=-', JSON.stringify(bannerImages))
-        console.log('-=-=-=-grid-=-=-=-=-=-=-', JSON.stringify(gridImages))
       } else if (props.homeReducer.error != null) {
         setLoading(false)
-
         return 'error message'
       } else {
         setLoading(false)
@@ -95,17 +63,13 @@ const HomeScreen = props => {
     }
     return null
   }
-  const pressLoad = () => {
-    setLoading(true)
-    props.homeAction()
-  }
+
   return (
     <>
       <SafeAreaView
         style={{
           flex: 1,
           backgroundColor: Colors.BLACK,
-          // alignItems: 'center',
         }}>
         <CommonLoader loading={loading} />
         <ImageBackground
@@ -114,111 +78,48 @@ const HomeScreen = props => {
             alignItems: 'center',
           }}
           source={AppImages.backgroundImage}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {bannerImages.length ? (
-              <FlatListSlider
-                data={bannerImages}
-                imageKey={'banner'}
-                local={false}
-                autoscroll={false}
-                uri={true}
-                timer={3000}
-                onPress={() => {
-                  // alert('Yet To Implement');
-                }}
-                height={Scaling.HEIGHT_SCALE_200}
-                width={Screen.width / 1.1}
-                imageHeight={Scaling.HEIGHT_SCALE_200}
-                // borderRadius={Scaling.HEIGHT_SCALE_20}
-                contentContainerStyle={{
+          <FlatList
+            data={shopArray}
+            keyExtractor={(item, index) => index.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{}}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                key={index}
+                style={{
+                  flexDirection: 'row',
+                  // flex: 1,
+                  backgroundColor: Colors.WHITE,
+                  padding: Scaling.HEIGHT_SCALE_10,
+                  height: Scaling.HEIGHT_SCALE_100,
+                  width: Screen.width / 1.14,
+                  alignSelf: 'center',
+                  marginTop: Scaling.HEIGHT_SCALE_30,
+                  borderRadius: Scaling.HEIGHT_SCALE_8,
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'white',
                 }}
-                // indicator={bannerImages.length > 1 ? true : false}
-                indicatorContainerStyle={{
-                  bottom: Scaling.HEIGHT_SCALE_30,
-                  left: Scaling.HEIGHT_SCALE_30,
-                  position: 'absolute',
-                }}
-                indicatorStyle={{
-                  height: Scaling.HEIGHT_SCALE_10,
-                  // width: Scaling.HEIGHT_SCALE_10,
-                  borderRadius: Scaling.HEIGHT_SCALE_20,
-                  // backgroundColor: 'red',
-                }}
-                indicatorActiveColor={Colors.WHITE}
-                indicatorInActiveColor={Colors.WHITE}
-                indicatorActiveWidth={Scaling.HEIGHT_SCALE_10}
-              />
-            ) : (
-              <Text
-                style={{
-                  // height: '100%',
-                  textAlign: 'center',
-                  textAlignVertical: 'center',
-                  fontSize: 16,
-                }}>
-                Loading... banner images
-              </Text>
-            )}
-            {gridImages ? (
-              <FlatGrid
-                itemDimension={Screen.width / 2.5}
-                data={gridImages}
-                numColumns={2}
-                spacing={20}
-                renderItem={({item, index}) => (
+                onPress={() => {}}>
+                <View style={styles.playIconView}>
                   <Image
-                    source={{uri: item}}
-                    style={{
-                      // marginLeft: 5,
-                      marginRight: 5,
-                      marginBottom: 5,
-                      resizeMode: 'cover',
-                      height: Screen.height / 3 - 5,
-                      width: Screen.width / 2 - 30,
-                    }}
-                  />
-                )}
-              />
-            ) : (
-              <Text
-                style={{
-                  // height: '100%',
-                  textAlign: 'center',
-                  textAlignVertical: 'center',
-                  fontSize: 16,
-                }}>
-                Loading... grid images
-              </Text>
+                    style={styles.playIcon}
+                    source={{uri: Urls.IMAGE_URL + item.photo}}></Image>
+                </View>
+                <View
+                  style={{
+                    flex: 7,
+                  }}>
+                  <Text style={{}}>{item.name}</Text>
+                  <Text style={{}}>
+                    {'Total containers: ' + item.total_container}
+                  </Text>
+                  <Text style={{}}>
+                    {'Containers available: ' + item.available_container}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             )}
-          </ScrollView>
-          <TouchableOpacity
-            style={{
-              height: Scaling.HEIGHT_SCALE_50,
-              width: Screen.width / 3,
-              // alignSelf: 'center',
-              backgroundColor: 'white',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'absolute',
-              bottom: Scaling.HEIGHT_SCALE_40,
-              borderRadius: Scaling.HEIGHT_SCALE_20,
-            }}
-            onPress={() => {
-              pressLoad()
-            }}>
-            <Text
-              style={{
-                // height: '100%',
-                textAlign: 'center',
-                textAlignVertical: 'center',
-                fontSize: 16,
-              }}>
-              Load
-            </Text>
-          </TouchableOpacity>
+          />
         </ImageBackground>
       </SafeAreaView>
     </>

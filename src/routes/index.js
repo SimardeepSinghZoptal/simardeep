@@ -11,9 +11,22 @@ import HomeScreen from '../screens/HomeContainer/homeScreen/index'
 import Images from '../assets/AppImages'
 import {Colors, Strings, Scaling} from '../constants'
 import MessageScreen from '../screens/HomeContainer/message/MessageScreen'
+import LoginScreen from '../screens/AuthenticationScreens/loginScreen/index'
 // import signupScreen from '../screens/AuthenticationScreens/signupScreen'
 const RootNavigator = createStackNavigator()
 
+const LoginNavigator = createStackNavigator()
+const LoginScreenNaviagtor = () => {
+  return (
+    <LoginNavigator.Navigator>
+      <LoginNavigator.Screen
+        name={RouteKeys.LOGIN}
+        component={LoginScreen}
+        options={{headerShown: false}}
+      />
+    </LoginNavigator.Navigator>
+  )
+}
 const HomeNavigator = createStackNavigator()
 const HomeScreenNaviagtor = () => {
   return (
@@ -124,6 +137,11 @@ export const Router = () => {
         <RootNavigator.Screen
           name={RouteKeys.SPLASH}
           component={SplashScreen}
+          options={{headerShown: false}}
+        />
+        <RootNavigator.Screen
+          name={RouteKeys.LOGIN}
+          component={LoginScreen}
           options={{headerShown: false}}
         />
 

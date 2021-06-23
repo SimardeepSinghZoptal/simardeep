@@ -1,22 +1,21 @@
-import {Types} from './HomeScreenAction'
-const INIT_DATA_HOME_EPISODE_SCREEN = {
+/* eslint-disable prettier/prettier */
+import {Types} from './LoginScreenAction'
+const INIT_DATA = {
   response: null,
   loading: false,
   error: null,
 }
-export function homeReducer (state = INIT_DATA_HOME_EPISODE_SCREEN, action) {
+export function loginApp (state = INIT_DATA, action) {
   switch (action.type) {
-    case Types.HOME_SCREEN_START:
+    case Types.LOGIN_START:
       return {response: null, loading: true, error: null}
-    case Types.HOME_SCREEN_COMPLETE:
+    case Types.LOGIN_COMPLETE:
       return {response: action.payload, loading: false, error: null}
-    case Types.HOME_SCREEN_ERROR:
+    case Types.LOGIN_ERROR:
       return {response: action.payload, loading: false, error: null}
-    case Types.HOME_SCREEN_RESET:
+    case Types.LOGIN_RESET:
       return {...state, response: null, loading: false, error: null}
     default:
       return {...state, response: null, loading: false, error: null}
-    // default:
-    //   return INIT_DATA_HOME_EPISODE_SCREEN
   }
 }
