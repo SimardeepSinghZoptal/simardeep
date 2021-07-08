@@ -24,44 +24,115 @@ import {FlatListSlider} from 'react-native-flatlist-slider'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {StorageKey} from '../../../constants/AsyncStorageService'
 import Urls from '../../../constants/Urls'
+import ShowSnack from '../../../constants/ShowSnack'
+import {RouteKeys} from '../../../routes/RouteKeys'
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const HomeScreen = props => {
   const isFocused = useIsFocused()
   const [loading, setLoading] = useState(false)
-  const [shopArray, setShopArray] = useState([])
+  const [shopArray, setShopArray] = useState([
+    {
+      name: 'Mouse',
+      image: AppImages.dummyIcon,
+      price: 100,
+      quantity: 1,
+      totalPrice: 100,
+      id: 1,
+    },
+    {
+      name: 'Computer',
+      image: AppImages.church2Icon,
+      price: 200,
+      quantity: 1,
+      totalPrice: 200,
+      id: 2,
+    },
+    {
+      name: 'Mobile',
+      image: AppImages.churchIcon,
+      price: 300,
+      quantity: 1,
+      totalPrice: 300,
+      id: 3,
+    },
+    {
+      name: 'LED',
+      image: AppImages.dummyIcon,
+      price: 400,
+      quantity: 1,
+      totalPrice: 400,
+      id: 4,
+    },
+    {
+      name: 'Keyboard',
+      image: AppImages.backgroundImage,
+      price: 500,
+      quantity: 1,
+      totalPrice: 500,
+      id: 5,
+    },
+    {
+      name: 'Mac',
+      image: AppImages.dummyIcon,
+      price: 600,
+      quantity: 1,
+      totalPrice: 600,
+      id: 6,
+    },
+    {
+      name: 'Mini',
+      image: AppImages.church2Icon,
+      price: 700,
+      quantity: 1,
+      totalPrice: 700,
+      id: 7,
+    },
+    {
+      name: 'Glass gaurd',
+      image: AppImages.churchIcon,
+      price: 800,
+      quantity: 1,
+      totalPrice: 800,
+      id: 8,
+    },
+    {
+      name: 'Copy',
+      image: AppImages.backgroundImage,
+      price: 900,
+      quantity: 1,
+      totalPrice: 900,
+      id: 9,
+    },
+    {
+      name: 'Pen',
+      image: AppImages.dummyIcon,
+      price: 1000,
+      quantity: 1,
+      totalPrice: 1000,
+      id: 10,
+    },
+  ])
+  const [cartArray, setCartArray] = useState([])
+  const [checkIndex, setCheckIndex] = useState('')
 
-  useEffect(() => {
-    if (isFocused) {
-      callHomeApi()
+  const addTocart = (item, index) => {
+    if (checkIndex !== index) {
+      setCheckIndex(index)
+      var temp = cartArray
+      temp.push(item)
+      setCartArray(temp)
+      console.log('-=-=-=cartarray-=-=-=-=-=', cartArray)
+      ShowSnack('Added to cart')
+    } else {
+      ShowSnack('Added to cart')
     }
-  }, [props.homeAction, isFocused])
-  const callHomeApi = async () => {
-    var token = await AsyncStorage.getItem(StorageKey.ACCESS_TOKEN)
-    setLoading(true)
-    props.homeAction('86', token)
   }
-  useEffect(() => {
-    let responseData = getHomeResponse()
-    if (responseData != null) {
-      setTimeout(() => {}, 500)
-    }
-  }, [props.homeReducer.response])
-  const getHomeResponse = async () => {
-    if (props.homeReducer.loading == false) {
-      if (props.homeReducer.response != null) {
-        setShopArray(props.homeReducer.response.data.data.containerDetail)
-        setLoading(false)
-      } else if (props.homeReducer.error != null) {
-        setLoading(false)
-        return 'error message'
-      } else {
-        setLoading(false)
-
-        return null
-      }
-    }
-    return null
+  const gotoCheckOut = () => {
+    props.navigation.navigate(RouteKeys.CART_SCREEN, {
+      screen: RouteKeys.CART_SCREEN,
+      data: cartArray,
+    })
   }
 
   return (
@@ -69,58 +140,94 @@ const HomeScreen = props => {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: Colors.BLACK,
+          backgroundColor: Colors.HERITAGE_COLOR,
+          alignItems: 'center',
         }}>
-        <CommonLoader loading={loading} />
-        <ImageBackground
+        {/* <ImageBackground
           style={{
             flex: 1,
             alignItems: 'center',
           }}
-          source={AppImages.backgroundImage}>
-          <FlatList
-            data={shopArray}
-            keyExtractor={(item, index) => index.toString()}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{}}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item, index}) => (
-              <TouchableOpacity
-                key={index}
+          source={AppImages.backgroundImage}> */}
+        <FlatList
+          data={shopArray}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{}}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({item, index}) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                // flex: 1,
+                backgroundColor: Colors.WHITE,
+                padding: Scaling.HEIGHT_SCALE_10,
+                height: Scaling.HEIGHT_SCALE_100,
+                width: Screen.width / 1.14,
+                alignSelf: 'center',
+                marginTop: Scaling.HEIGHT_SCALE_30,
+                borderRadius: Scaling.HEIGHT_SCALE_8,
+                // alignItems: 'center',
+                marginBottom:
+                  index === shopArray.length - 1 ? Scaling.HEIGHT_SCALE_90 : 0,
+              }}>
+              <View style={styles.playIconView}>
+                <Image style={styles.playIcon} source={item.image}></Image>
+              </View>
+              <View
                 style={{
-                  flexDirection: 'row',
-                  // flex: 1,
-                  backgroundColor: Colors.WHITE,
-                  padding: Scaling.HEIGHT_SCALE_10,
-                  height: Scaling.HEIGHT_SCALE_100,
-                  width: Screen.width / 1.14,
-                  alignSelf: 'center',
-                  marginTop: Scaling.HEIGHT_SCALE_30,
-                  borderRadius: Scaling.HEIGHT_SCALE_8,
-                  alignItems: 'center',
-                }}
-                onPress={() => {}}>
-                <View style={styles.playIconView}>
-                  <Image
-                    style={styles.playIcon}
-                    source={{uri: Urls.IMAGE_URL + item.photo}}></Image>
-                </View>
-                <View
+                  flex: 5,
+                  paddingHorizontal: Scaling.HEIGHT_SCALE_5,
+                }}>
+                <Text style={{}}>{item.name}</Text>
+                <Text style={{}}>{'Price: ' + item.price}</Text>
+              </View>
+              <View
+                style={{
+                  flex: 2,
+                }}>
+                <TouchableOpacity
                   style={{
-                    flex: 7,
-                  }}>
-                  <Text style={{}}>{item.name}</Text>
-                  <Text style={{}}>
-                    {'Total containers: ' + item.total_container}
+                    backgroundColor: 'black',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: Scaling.HEIGHT_SCALE_5,
+                    // height: Scaling.HEIGHT_SCALE_50,
+                    marginBottom: Scaling.HEIGHT_SCALE_2,
+                  }}
+                  onPress={() => addTocart(item, index)}>
+                  <Text
+                    style={{color: 'white', padding: Scaling.HEIGHT_SCALE_4}}>
+                    Add to cart
                   </Text>
-                  <Text style={{}}>
-                    {'Containers available: ' + item.available_container}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </ImageBackground>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        />
+        <TouchableOpacity
+          style={{
+            backgroundColor: Colors.RED_MAROON,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: Scaling.HEIGHT_SCALE_5,
+            position: 'absolute',
+            height: Scaling.HEIGHT_SCALE_50,
+            width: width / 3,
+            bottom: Scaling.HEIGHT_SCALE_30,
+          }}
+          onPress={() => gotoCheckOut()}>
+          <Text
+            style={{
+              color: 'white',
+              padding: Scaling.HEIGHT_SCALE_4,
+              fontSize: fontScale(18),
+            }}>
+            Check out
+          </Text>
+        </TouchableOpacity>
+        {/* </ImageBackground> */}
       </SafeAreaView>
     </>
   )
@@ -203,6 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: Scaling.HEIGHT_SCALE_75,
     height: Scaling.HEIGHT_SCALE_75,
+    resizeMode: 'contain',
   },
   playIconView: {
     flex: 3,
@@ -210,103 +318,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 })
-
-class SkeletonView extends React.Component {
-  render () {
-    return (
-      <SkeletonPlaceholder>
-        <View
-          style={{
-            flexDirection: 'row',
-            // flex: 1,
-            backgroundColor: Colors.WHITE,
-            padding: Scaling.HEIGHT_SCALE_10,
-            height: Scaling.HEIGHT_SCALE_100,
-            width: Screen.width / 1.14,
-            alignSelf: 'center',
-            marginTop: Scaling.HEIGHT_SCALE_30,
-            borderRadius: Scaling.HEIGHT_SCALE_8,
-            marginBottom: Scaling.HEIGHT_SCALE_30,
-
-            // alignItems:"center"
-          }}>
-          <View
-            style={{
-              flex: 3,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Image
-              style={{
-                // flex: 3,
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: Scaling.HEIGHT_SCALE_75,
-                height: Scaling.HEIGHT_SCALE_75,
-              }}
-              source={AppImages.playIcon}></Image>
-          </View>
-          <View
-            style={{
-              flex: 7,
-              paddingHorizontal: Scaling.HEIGHT_SCALE_10,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                // justifyContent: 'space-between',
-                marginBottom: Scaling.HEIGHT_SCALE_5,
-              }}>
-              {/* <Image
-            source={AppImages.fivethIcon}
-            style={{
-              // width: Scaling.HEIGHT_SCALE_35,
-              // height: Scaling.HEIGHT_SCALE_35,
-              marginRight: Scaling.HEIGHT_SCALE_10,
-            }}
-          /> */}
-              <SkeletonPlaceholder.Item
-                style={{
-                  fontSize: fontScale(16),
-                  fontFamily: FontName.MERRIWEATHER_BLACK,
-                  color: Colors.RED_MAROON,
-                  marginRight: Scaling.HEIGHT_SCALE_10,
-                }}
-              />
-
-              <SkeletonPlaceholder.Item
-                style={{
-                  fontSize: fontScale(16),
-                  fontFamily: FontName.MERRIWEATHER_BLACK,
-                  color: Colors.DARK_BROWN,
-                }}
-              />
-            </View>
-
-            <Image
-              source={AppImages.lineIcon}
-              style={{
-                width: '100%',
-                // height: Scaling.HEIGHT_SCALE_35,
-                marginBottom: Scaling.HEIGHT_SCALE_6,
-              }}
-            />
-            <SkeletonPlaceholder.Item
-              style={{
-                fontSize: fontScale(14),
-                fontFamily: FontName.MERRIWEATHER_LIGHT,
-              }}
-            />
-            <SkeletonPlaceholder.Item
-              style={{
-                fontSize: fontScale(14),
-                fontFamily: FontName.MERRIWEATHER_LIGHT,
-              }}
-            />
-          </View>
-        </View>
-      </SkeletonPlaceholder>
-    )
-  }
-}

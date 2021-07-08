@@ -30,25 +30,25 @@ const SplashScreen = props => {
     }
   }, [isFocused])
   const getData = async () => {
-    const accessToken = await AsyncStorage.getItem(StorageKey.ACCESS_TOKEN)
+    // const accessToken = await AsyncStorage.getItem(StorageKey.ACCESS_TOKEN)
 
-    if (accessToken !== null) {
-      setTimeout(() => {
-        props.navigation.dispatch(
-          StackActions.replace(RouteKeys.TAB_SCREEN, {
-            screen: RouteKeys.HOME_SCREEN,
-          }),
-        )
-      }, 2000)
-    } else {
-      setTimeout(() => {
-        props.navigation.dispatch(
-          StackActions.replace(RouteKeys.LOGIN, {
-            screen: RouteKeys.LOGIN,
-          }),
-        )
-      }, 2000)
-    }
+    // if (accessToken !== null) {
+    //   setTimeout(() => {
+    //     props.navigation.dispatch(
+    //       StackActions.replace(RouteKeys.TAB_SCREEN, {
+    //         screen: RouteKeys.HOME_SCREEN,
+    //       }),
+    //     )
+    //   }, 2000)
+    // } else {
+    setTimeout(() => {
+      props.navigation.dispatch(
+        StackActions.replace(RouteKeys.HOME_SCREEN, {
+          screen: RouteKeys.HOME_SCREEN,
+        }),
+      )
+    }, 2000)
+    // }
   }
   return (
     <>
